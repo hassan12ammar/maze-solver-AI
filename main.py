@@ -1,146 +1,132 @@
-def start_values():
-    FILE_PATH = input("maze path: ").strip('"\'') #"/home/hassan/Documents/testing/maze3.txt"             #"maze1.txt"
-    OUTFILE_PATH = input("output path: ").strip('"\'') #"/home/hassan/Documents/testing/maze solve3.txt"    #"maze solve1.txt"
-    HIGHT = len(open(FILE_PATH,'r').readlines())
-    WIEDTH = len(open(FILE_PATH,'r').readline())-1
-    file = open(FILE_PATH,'r')
-    MAZE = file.read()
-    file.close()
-    file = open(OUTFILE_PATH,"w+")
-    file.write(MAZE)
-    file.close()
-    return FILE_PATH,OUTFILE_PATH,HIGHT,WIEDTH
+# import from files
+from typing import Union
+from constant import END, END_X, END_Y
+from constant import MAZE, HIGHT, WIEDTH, OUTFILE_PATH, START_X, START_Y, MOVE
 
-FILE_PATH, OUTFILE_PATH, HIGHT, WIEDTH = start_values()
 
-def reload_maze():
-    file = open(OUTFILE_PATH,'r')
-    maze = file.read()
-    file.close()
-    return maze
-
-maze = reload_maze()
-
-def latter_indexing(l):
-    with open(FILE_PATH,'r+') as file:
-        column = 0
-        for line in file.readlines():
-            column+= 1
-            row = 0
-            for latter in line:
-                row+= 1
-                if latter == l:
-                    return column,row
-
-def column_row_indexing(col,row_):
-    with open(OUTFILE_PATH,'r+') as file:
+def index_of_col_row(col:int, row:int) -> Union[int, None]:
+    """ get the index of sample by its coloumn and row """
+    with open(OUTFILE_PATH, 'r+') as file:
         indx = 0
-        coloumn = 0
-        for line in file.readlines():
-            coloumn += 1
-            row = 0
-            for latter in line:
+        for coloumn, line in enumerate(file.readlines()):
+            for row_, _ in enumerate(line):
                 indx += 1
-                row += 1
-                if coloumn == col and row == row_:
-                    return indx-1
+                if coloumn == col and row_ == row:
+                    return indx - 1
 
-def write_move(index,move):
-    maze_ = maze[:index] + move + maze[index + 1:]
+
+def write_move(index:int, move:str) -> None:
+    """ write the move to board """
+    global solution
+    solution = solution[:index] + move + solution[index + 1:]
     with open(OUTFILE_PATH,'r+') as file:
         file.seek(0)
-        file.write(maze_)
+        file.write(solution)
 
-def check(col,row,check_sample):
+
+def check(col:int, row:int, check_for=END) -> Union[list, None]:
+    """ check if the there is sample arround the given column and row 
+        and return a list of coordinates if so """
+    if col <= 0 and row <= 0 :
+        return
+
+    global solution
     check_sample_dict = \
     {
-        "up":(col-1,row),
-        "down":(col+1,row),
-        "right":(col,row+1),
-        "left":((col,row-1))
+        "up"    : (col - 1, row),
+        "down"  : (col + 1, row),
+        "right" : (col,     row + 1),
+        "left"  : (col,     row - 1)
     }
-    return_values = []
-    if col >= 0 and row >= 0 :
-        for sample in check_sample_dict:
-            if sample == "down" and col == HIGHT :
-                continue
-            if sample == "right" and row == WIEDTH :
-                continue
-            current_check_x,current_check_y = check_sample_dict[sample]
-            current_check_index = column_row_indexing(current_check_x,current_check_y)
-            if check_sample == maze[current_check_index]:
-                return_values.append((check_sample_dict[sample],sample))
-        return return_values
-    else:
-        return False
+    samples_found = []
 
-def move(col,row,sample):
-    global maze
-    sample_dict = {
-        "up":"|",
-        "down":"|",
-        "right":"-",
-        "left":"-"}
-    for sample_check in sample_dict:
-        if sample == sample_check:
-            write_move(column_row_indexing(col,row),sample_dict[sample_check]) #move_down(col,row)
-            maze = reload_maze()
+    for sample in check_sample_dict:
+        # ignore the boundried of the maze
+        if sample == "down" and col == HIGHT:
+            continue
+        if sample == "right" and row == WIEDTH:
+            continue
+        x, y = check_sample_dict[sample]
+        sample_index = index_of_col_row(x, y)
+        if check_for == solution[sample_index]:
+            samples_found.append((check_sample_dict[sample], sample))
 
-def get_min_distance_value(move_list,END_X,END_Y):
-    distance_values_list = []
-    if len(move_list)>0:
-        for move in range(len(move_list)):
-            move_value = move_list[move][0]
-            distance_value = abs((move_value[0]-END_X)+(move_value[1]-END_Y))
-            distance_values_list.append(distance_value)
+    return samples_found
+
+
+def move(col:int, row:int, sample:str) -> None:
+    """ make move from column and row and diraction (up, down, left, right) """
+    move_sample = {
+        "up"    : "|",
+        "down"  : "|",
+        "right" : "-",
+        "left"  : "-"
+    }
+    write_move(index_of_col_row(col,row), move_sample[sample])
+
+
+def get_min_distance_value(moves:list) -> Union[int, None]:
+    """ return None if in the edge 
+        otherwise return index of the closest move to the end target """
+    if len(moves) < 0:
+        return
+
+    distance_values_list = [
+        # distance value between move and the target end
+        abs( (move[0] [0] - END_X) + 
+                (move[0] [1] - END_Y) )
+        for move in moves ]
+
     minimum_value = min(distance_values_list)
     return distance_values_list.index(minimum_value)
 
+
 def main():
-    #setting up the constant
-    global maze
-    print("maze solver by Hassan Ammar")
-    print(maze)
-    END = input("end sample: ") #'+'
-    START = input("start sample: ") #'.'
-    MOVE = input("move sample: ") #' '
-    END_X,END_Y = latter_indexing(END)
-    START_X,START_Y = latter_indexing(START)
-    position_x,position_y = START_X,START_Y
-    move_list = []
-    #began the main loop by checking the end
-    while not check(position_x,position_y,END):
-        #check() return list of all posible moves in tuple with direction
-        move_list = check(position_x,position_y,MOVE)
-        #calculate the distance of moves and return the index of minimum value
-        minimum_value_index = get_min_distance_value(move_list,END_X,END_Y)
-        #get the coordinates as tuple and direction of minimum value from the move list
-        best_move_index,best_move = move_list[minimum_value_index]
-        #split the coordinates to x and y of the value
-        best_move_index_x,best_move_index_y = best_move_index
-        print(best_move)
-        #make the move
-        move(best_move_index_x,best_move_index_y,best_move)
-        #change the current coordinates position
-        position_x,position_y = best_move_index_x,best_move_index_y
-        #check the odds of winning
-        win_status = [check(position_x,position_y,END) == 'up',
-                    check(position_x,position_y,END) == 'down',
-                    check(position_x,position_y,END) == 'right',
-                    check(position_x,position_y,END) == 'left']
-        #check if any of it if True 
-        if any(win_status):
-            print("Solustion Found")
-            break
-        #check dead end
-        if not move_list :
-            print("No Solutio Found")
-            break
-        #remove the previous move from the move list
+    global solution
+    solution = MAZE
+
+    position_x, position_y = START_X, START_Y
+
+    while not check(position_x, position_y, END):
+        # get list of all posible moves in with its direction
+        move_list = check(position_x,position_y, MOVE)
+        # check dead end
+        if not move_list: return
+        # get the index of the closest move to the target end
+        minimum_value_index = get_min_distance_value(move_list)
+        # get the coordinates (x, y) and the direction of minimum value from the move availabe
+        (best_move_x, best_move_y), best_move = move_list[minimum_value_index]
+        # make the move
+        move(best_move_x, best_move_y, best_move)
+        # change the current coordinates position
+        position_x, position_y = best_move_x, best_move_y
+        # check if we found a solotion
+        sol_status = [check(position_x,position_y, END) == 'up',
+                    check(position_x,position_y, END) == 'down',
+                    check(position_x,position_y, END) == 'right',
+                    check(position_x,position_y, END) == 'left']
+        if any(sol_status):
+            return solution
+        # remove the previous move from the move availabe
         move_list.pop(minimum_value_index)
-    #tell the user that we done and display the answer
-    print("Done.")
-    print(maze)
+
+    return solution
 
 if __name__ == "__main__":
-    main()
+    # write the maze into the output file to solve
+    with open(OUTFILE_PATH, "w+") as file: file.write(MAZE)
+
+    print(f"your maze: \n{MAZE}")
+
+    final_solution = main()
+
+    print("Done")
+
+    if not final_solution:
+        print("No Solution Found")
+        print(final_solution)
+    else:
+        print("Solution Found: ")
+    print(solution)
+
+

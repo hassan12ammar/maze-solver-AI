@@ -1,115 +1,59 @@
-```
-Maze Solver By Hassan Ammar :)
-Finall release after Debugging :)
-This programe take maze as text file path and output path and some information 
-Such as (beginning sample, end sample and the move) to solve the maze
-and save in the output path :)
-It's implementation of a* algorthim in pyrhon :) 
-Have Fun. :)
-This is an example of how it's work :)
+# Maze Solver Based on A* Algorthim
+This script takes a path of maze as txt file, output path, some information 
+(beginning sample, end sample and the move) Then solve the maze and save in the output path
+It's implementation of A* algorthim in pyrhon
+### **Have Fun. :)**
 
-maze path: Documents/testing/maze3.txt
-output path: Documents/testing/maze solve3.txt
-maze solver by Hassan Ammar
+## This is an example of how it's work:
+
+```
+python main.py
+maze path: 'maze example/maze1.txt'
+output path: 'maze example/maze solve1.txt'
+start sample: .
+end sample: +
+move sample:  
+your maze: 
 ########################################
 #           #                         ##
 #           # ####################### ##
-#           # #                     # ##
-#           # #                     # ##
-#  ########## #                     # ##
-#  #          #                     # ##
-#  # ##########                     # ##
-#  # #        ####################### ##
-#  # #        #+                      ##
-#  # #        ############ ########## ##
-#  # #            #                   ##
-#  # #            # ####################
-#  # #            #        #           #
-#  # #           ######### #           #
-#  # #                   # #           #
-#  # #                   # #           #
+#           # #            ###      # ##
+#           # #            #+#      # ##
+#  ########## #            # #      # ##
+#  #          #            # #      # ##
+#  # ##########            # #      # ##
+#  # #         ############# ######## ##
+#  # #         #                    # ##
+#  # #         # ################## # ##
+#  # #         # #                #   ##
+#  # #         # #  ####################
+#  # #         # #  #      #           #
+#  # #         # #### #### #           #
+#  # #         #      #  # #           #
+#  # #         ########  # #           #
 #  ####################### #           #
 #  #                       #           #
 ####.###################################
-end sample: +
-start sample: .
-move sample:
-up
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-right
-up
-up
-up
-up
-up
-left
-left
-left
-left
-left
-left
-left
-up
-up
-right
-right
-right
-right
-right
-right
-right
-up
-up
-left
-left
-left
-left
-left
-left
-left
-left
-left
-left
-Done.
+Done
+Solution Found: 
 ########################################
 #           #                         ##
 #           # ####################### ##
-#           # #                     # ##
-#           # #                     # ##
-#  ########## #                     # ##
-#  #          #                     # ##
-#  # ##########                     # ##
-#  # #        ####################### ##
-#  # #        #+----------|           ##
-#  # #        ############|########## ##
-#  # #            #|-------           ##
-#  # #            #|####################
-#  # #            #-------|#           #
-#  # #           #########|#           #
-#  # #                   #|#           #
-#  # #                   #|#           #
+#           # #            ###      # ##
+#           # #            #+#      # ##
+#  ########## #            #|#      # ##
+#  #          #            #|#      # ##
+#  # ##########            #|#      # ##
+#  # #         #############|######## ##
+#  # #         #|------------       # ##
+#  # #         #|################## # ##
+#  # #         #|#                #   ##
+#  # #         #|#  ####################
+#  # #         #|#  #-----|#           #
+#  # #         #|####|####|#           #
+#  # #         #-----|#  #|#           #
+#  # #         ########  #|#           #
 #  #######################|#           #
 #  #|----------------------#           #
 ####.###################################
-
 ```
